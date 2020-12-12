@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import logo from './logo.svg';
 
-import MovieDetail from './movieDetail'
+
 /*
-Display a list of movies where each movie contains a list of users that favorited it.
+Use React and the data below to display a list of users alongside their favorite movies.
 
 For detailed instructions, refer to instructions.md.
 */
@@ -45,7 +45,7 @@ const profiles = [
 const users = {
   1: {
     id: 1,
-    name: 'Jane Jones',
+    name: 'Jane Cruz',
     userName: 'coder',
   },
   2: {
@@ -59,7 +59,7 @@ const users = {
     userName: 'user123',
   },
   4: {
-    id: 3,
+    id: 4,
     name: 'John Doe',
     userName: 'user123',
   },
@@ -78,7 +78,7 @@ const users = {
 const movies = {
   1: {
     id: 1,
-    name: 'Planet Earth',
+    name: 'Planet Earth 1',
   },
   2: {
     id: 2,
@@ -99,42 +99,28 @@ const movies = {
 };
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.usersByMovie = {};
-
-    Object.keys(movies).forEach(movie => {
-      const movieName = movies[movie].name;
-
-      let userList = []
-
-      profiles.forEach(profile => {
-
-        if (profile.favoriteMovieID === movie) {
-            userList.push(users[profile.userID].name);
-        }
-      });
-
-      this.usersByMovie[movieName] = userList;
-
-    });
-  }
-
   render() {
     return (
-      <div className="App">
+      <div>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">ReactND - Coding Practice</h1>
         </header>
-        <h2>How Popular is Your Favorite Movie?</h2>
-          <ol>
-          {Object.keys(this.usersByMovie).map(movie =>
-              <MovieDetail movieNmae={movie} users={this.usersByMovie[movie]}/>
-          )}
-          </ol>
+        <h2>Favorite Movies</h2>
 
+		<ul>
+		{profiles.map(profile => {
+         const userName = users[profile.userID].name;
+		 const movieName = movies[profile.favoriteMovieID].name;
 
+		return (
+	        <li key={profile.userID}>
+
+			<p>{`${userName}'s favorite movie is "${movieName}."`}</p>
+			</li>
+			)
+		})}
+		</ul>
       </div>
     );
   }
