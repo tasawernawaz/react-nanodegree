@@ -29,14 +29,56 @@ function createStore (reducer) {
 
 
 // app code
+
+const ADD_TODO = "ADD_TODO"
+const REMOVE_TODO = "REMOVE_TODO"
+const TOGGLE_TODO = "TOGGLE_TODO"
+const ADD_GOAL = "ADD_GOAL"
+const REMOVE_GOAL = "REMOVE_GOAL"
+
+function addTodoAction (todo) {
+    return {
+        type: ADD_TODO,
+        todo
+    }
+}
+
+function removeTodoAction(id) {
+    return {
+        type: REMOVE_TODO,
+        id
+    }
+}
+
+function toggleAction(id) {
+    return {
+        type: TOGGLE_TODO,
+        id
+    }
+}
+
+function addGoalAction (goal) {
+    return {
+        type: ADD_GOAL,
+        goal
+    }
+}
+
+function removeGoalAction (id) {
+    return {
+        type: REMOVE_GOAL,
+        id
+    }
+}
+
 function todos(state=[], action) {
 
     switch(action.type) {
-        case "ADD_TODO":
+        case ADD_TODO:
             return state.concat(action.todo)
-        case "REMOVE_TODO":
+        case REMOVE_TODO:
             return state.filter(s => s.id !== action.id)
-        case "TOGGLE_TODO":
+        case TOGGLE_TODO:
             return state.map(todo => todo.id !== action.id ? todo :
                 Object.assign({}, todo, {complete: ! todo.complete}))
         default:
@@ -47,9 +89,9 @@ function todos(state=[], action) {
 function goals(state=[], action) {
 
     switch(action.type) {
-        case "ADD_GOAL":
+        case ADD_GOAL:
             return state.concat(action.goal)
-        case "REMOVE_GOAL":
+        case REMOVE_GOAL:
             return state.filter(s => s.id !== action.id)
         default:
             return state
@@ -67,37 +109,38 @@ const store = createStore(app)
 
 store.subsucribe(() => console.log("The current state of the store is ", store.getState()))
 
-let action = {
-    type: "ADD_TODO",
-    todo: {
-        id: 1,
-        name: "Complete redux",
-        complete: false
-    }
-}
+store.dispatch(addTodoAction({
+    id: 0,
+    name: "watch video",
+    complete: true
+}))
 
-store.dispatch(action)
+store.dispatch(addTodoAction({
+    id: 1,
+    name: "Complete redux",
+    complete: false
+}))
 
+store.dispatch(addTodoAction({
+    id: 2,
+    name: "this should be removed",
+    complete: true
+}))
 
-action = {
-    type: "ADD_TODO",
-    todo: {
-        id: 1,
-        name: "watch video",
-        complete: true
-    }
-}
+store.dispatch(removeTodoAction({
+    id: 2
+}))
 
-store.dispatch(action)
+store.dispatch(addGoalAction({
+    id: 0,
+    name: "This has to be removed"
+}))
 
+store.dispatch(addGoalAction({
+    id: 1,
+    name: "Lose weight"
+}))
 
-const goal = {
-    type: "ADD_GOAL",
-    goal: {
-        id: 0,
-        name: "Lose weight"
-    }
-}
-
-store.dispatch(action)
-store.dispatch(goal)
+store.dispatch(removeGoalAction({
+    id: 0
+}))
