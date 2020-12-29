@@ -213,6 +213,13 @@
             }))
         }
 
+        function createRemoveBtn(onClick) {
+            const button = document.createElement("button")
+            button.innerText = "x"
+            button.addEventListener("click", onClick)
+            return button
+        }
+
         function addTodoToDom(todo) {
             const node = document.createElement("li")
             node.setAttribute("id", todo.id)
@@ -223,7 +230,11 @@
                 node.style.textDecoration = "line-through";
             }
 
+            const removeBtn = createRemoveBtn(() => {
+                store.dispatch(removeTodoAction(todo.id))
+            })
             node.appendChild(text)
+            node.appendChild(removeBtn)
 
             document.getElementById("todos")
                 .appendChild(node)
@@ -233,7 +244,10 @@
             const node = document.createElement("li")
             const text = document.createTextNode(goal.name)
             node.appendChild(text)
-
+            const removeBtn = createRemoveBtn(() => {
+                store.dispatch(removeGoalAction(goal.id))
+            })
+            node.appendChild(removeBtn)
             document.getElementById("goals")
                 .appendChild(node)
 
