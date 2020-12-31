@@ -99,7 +99,7 @@
             }
         }
 
-        function checkAndDispatch(store, action) {
+        const checker = (store) => (next) => (action) => {
             if (action.type === ADD_TODO &&
                 action.todo.name.toLowerCase().includes("bitcoin")) {
                 return alert("No, thats a bad idea")
@@ -110,13 +110,13 @@
                 return alert("No, thats a bad idea")
             }
 
-            store.dispatch(action)
+            return next(action)
         }
 
         const store = Redux.createStore(Redux.combineReducers({
             todos,
             goals,
-        }))
+        }), Redux.applyMiddleware(checker))
 
         store.subscribe(() => {
             const { todos, goals } = store.getState()
@@ -133,7 +133,7 @@
             const name = input.value
             input.value = ""
 
-            checkAndDispatch(store, addTodoAction({
+            store.dispatch(addTodoAction({
                 name,
                 complete: false,
                 id: generateId()
@@ -141,7 +141,7 @@
         }
 
         function toggleTodo(event) {
-            checkAndDispatch(store, toggleTodoAction(event.target.id))
+            store.dispatch(toggleTodoAction(event.target.id))
         }
 
         function addGoal() {
@@ -149,7 +149,7 @@
             const name = input.value
             input.value = ""
 
-            checkAndDispatch(store, addGoalAction({
+            store.dispatch(addGoalAction({
                 name,
                 id: generateId()
             }))
@@ -173,7 +173,7 @@
             }
 
             const removeBtn = createRemoveBtn(() => {
-                checkAndDispatch(store, removeTodoAction(todo.id))
+                store.dispatch(removeTodoAction(todo.id))
             })
             node.appendChild(text)
             node.appendChild(removeBtn)
@@ -187,7 +187,7 @@
             const text = document.createTextNode(goal.name)
             node.appendChild(text)
             const removeBtn = createRemoveBtn(() => {
-                checkAndDispatch(store, removeGoalAction(goal.id))
+                store.dispatch(removeGoalAction(goal.id))
             })
             node.appendChild(removeBtn)
             document.getElementById("goals")
