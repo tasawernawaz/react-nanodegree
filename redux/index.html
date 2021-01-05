@@ -81,6 +81,53 @@
             }
         }
 
+        function handleToggleTodoAction(id) {
+            return (dispatch) => {
+                dispatch(toggleTodoAction(id))
+                API.saveTodoToggle(id)
+                    .catch(() => {
+                        dispatch(toggleTodoAction(id))
+                        alert("An error has occured, Try again")
+                    })
+            }
+
+        }
+
+        function handleAddTodoAction(name, inputField) {
+            return (dispatch) => {
+                API.saveTodo(name)
+                    .then((todo) => {
+                        dispatch(addTodoAction(todo))
+                        inputField.value = ""
+                    })
+                    .catch(() => alert("There was an error, Try again"))
+            }
+        }
+
+        function handleRemoveGoalAction(goal) {
+            return (dispatch) => {
+                dispatch(removeGoalAction(goal.id))
+                return API.deleteGoal(goal)
+                    .catch(() => {
+                        dispatch(addGoalAction(goal))
+                        alert("There was an error, Try again")
+                    })
+            }
+        }
+
+        function handleAddGoalAction(name, cb) {
+            return (dispatch) => {
+                API.saveGoal(name)
+                    .then(goal => {
+                        dispatch(addGoalAction(goal))
+                        cb()
+                    })
+                    .catch(() => {
+                        alert("There was an error, Try again")
+                    })
+            }
+        }
+
         function todos(state = [], action) {
 
             switch (action.type) {
@@ -189,32 +236,20 @@
 
         class Todo extends React.Component {
             addItem = (event) => {
-                const name = this.searchField.value
-                API.saveTodo(name).then((todo) => {
-                    this.props.store.dispatch(addTodoAction(todo))
-                    this.searchField.value = ""
-                })
-                    .catch(() => alert("There was an error, Try again"))
-
+                this.props.store.dispatch(
+                    handleAddTodoAction(
+                        this.searchField.value,
+                        this.searchField
+                    )
+                )
             }
 
             removeItem = (todo) => {
                 this.props.store.dispatch(handleDeleteTodo(todo))
-
-                API.deleteTodo(todo)
-                    .catch(() => {
-                        this.props.store.dispatch(addTodoAction(todo))
-                        alert("An error has occured, Try again")
-                    })
             }
 
             toggleItem = (id) => {
-                this.props.store.dispatch(toggleTodoAction(id))
-                API.saveTodoToggle(id)
-                    .catch(() => {
-                        this.props.store.dispatch(toggleTodoAction(id))
-                        alert("An error has occured, Try again")
-                    })
+                this.props.store.dispatch(handleToggleTodoAction(id))
             }
 
             render() {
@@ -240,17 +275,14 @@
 
         class Goal extends React.Component {
             addItem = (event) => {
-                const name = this.searchField.value
-                API.saveGoal(name)
-                    .then((goal) => {
-                        this.props.store.dispatch(addGoalAction(goal))
-                        this.searchField.value = ""
-                    })
-                    .catch(() => alert("There is an error, please try again."))
+                this.props.store.dispatch(handleAddGoalAction(
+                    this.searchField.value,
+                    () => this.searchField.value = ""
+                ))
             }
 
             removeItem = (goal) => {
-                this.props.store.dispatch(removeGoalAction(goal.id))
+                this.props.store.dispatch(handleRemoveGoalAction(goal))
             }
 
             render() {
