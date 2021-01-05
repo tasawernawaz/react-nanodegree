@@ -24,6 +24,7 @@
         const TOGGLE_TODO = "TOGGLE_TODO"
         const ADD_GOAL = "ADD_GOAL"
         const REMOVE_GOAL = "REMOVE_GOAL"
+        const RECIEVE_DATA = 'RECIEVE_DATA'
 
         function addTodoAction(todo) {
             return {
@@ -53,6 +54,14 @@
             }
         }
 
+        function recieveData(todos, goals) {
+            return {
+                type: RECIEVE_DATA,
+                todos,
+                goals
+            }
+        }
+
         function removeGoalAction(id) {
             return {
                 type: REMOVE_GOAL,
@@ -70,6 +79,8 @@
                 case TOGGLE_TODO:
                     return state.map(todo => todo.id !== action.id ? todo :
                         Object.assign({}, todo, { complete: !todo.complete }))
+                case RECIEVE_DATA:
+                    return action.todos
                 default:
                     return state
             }
@@ -82,6 +93,8 @@
                     return state.concat(action.goal)
                 case REMOVE_GOAL:
                     return state.filter(s => s.id !== action.id)
+                case RECIEVE_DATA:
+                    return action.goals
                 default:
                     return state
             }
@@ -229,9 +242,11 @@
             componentDidMount() {
                 const { store } = this.props
                 store.subscribe(() => this.forceUpdate())
-                Promise.all([API.fetchGoals, API.fetchTodos]).then(([goals, todos]) => {
-                    console.log("Todos:", todos)
-                    console.log("Goals:", goals)
+                Promise.all([
+                    API.fetchGoals(),
+                    API.fetchTodos()
+                ]).then(([goals, todos]) => {
+                    store.dispatch(recieveData(todos, goals))
                 })
             }
 
