@@ -178,21 +178,31 @@
         class Todo extends React.Component {
             addItem = (event) => {
                 const name = this.searchField.value
-                this.searchField.value = ""
-                const todo = {
-                    name: name,
-                    complete: false,
-                    id: generateId()
-                }
-                this.props.store.dispatch(addTodoAction(todo))
+                API.saveTodo(name).then((todo) => {
+                    this.props.store.dispatch(addTodoAction(todo))
+                    this.searchField.value = ""
+                })
+                    .catch(() => alert("There was an error, Try again"))
+
             }
 
             removeItem = (todo) => {
                 this.props.store.dispatch(removeTodoAction(todo.id))
+
+                API.deleteTodo(todo)
+                    .catch(() => {
+                        this.props.store.dispatch(addTodoAction(todo))
+                        alert("An error has occured, Try again")
+                    })
             }
 
             toggleItem = (id) => {
                 this.props.store.dispatch(toggleTodoAction(id))
+                API.saveTodoToggle(id)
+                    .catch(() => {
+                        this.props.store.dispatch(toggleTodoAction(id))
+                        alert("An error has occured, Try again")
+                    })
             }
 
             render() {
@@ -219,12 +229,12 @@
         class Goal extends React.Component {
             addItem = (event) => {
                 const name = this.searchField.value
-                this.searchField.value = ""
-                const goal = {
-                    name: name,
-                    id: generateId()
-                }
-                this.props.store.dispatch(addGoalAction(goal))
+                API.saveGoal(name)
+                    .then((goal) => {
+                        this.props.store.dispatch(addGoalAction(goal))
+                        this.searchField.value = ""
+                    })
+                    .catch(() => alert("There is an error, please try again."))
             }
 
             removeItem = (goal) => {
